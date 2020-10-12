@@ -1095,7 +1095,7 @@ li.activeclass {
     font-weight: 600;
     color: #383737;
     max-width: 415px;
-    display: -webkit-box;
+    /*display: -webkit-box;*/
     max-height: 3.2rem;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -3091,3 +3091,54 @@ i.cross_icon{
 a.router-link-exact-active.router-link-active{
     color: #0099ff!important;
 }
+
+ .demo-upload-list{
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+        box-shadow: 0 1px 1px rgba(0,0,0,.2);
+        margin-right: 4px;
+    }
+
+    ._table_icon_thumb{
+        width: 60px;
+        height: 60px;
+        text-align: center;
+      
+        border: 1px solid transparent;
+        border-radius: 4px;
+        
+        background: #fff;
+      
+        box-shadow: 0 1px 1px rgba(0,0,0,.2);
+        margin-right: 4px;
+    }
+    .demo-upload-list img, ._table_icon_thumb img{
+        width: 100%;
+        height: 100%;
+    }
+    .demo-upload-list-cover{
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,.6);
+    }
+    .demo-upload-list:hover .demo-upload-list-cover{
+        display: block;
+    }
+    .demo-upload-list-cover i{
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        margin: 0 2px;
+    }

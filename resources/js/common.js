@@ -7,15 +7,14 @@ export default{
 	methods:{
 		async callApi(method, url, dataObj){
 			try {
-				// Send a POST request
-				return await axios({
+				// Send a POST request by axios
+				return await axios({ 
 				  method: method,
 				  url: url,
 				  data: dataObj
 				});
 			}catch(e){
 				return e.response
-
 			}
 			
 		},
