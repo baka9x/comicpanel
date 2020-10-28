@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div>
+		<div v-if="$store.state.user">
       <!--========== ADMIN SIDE MENU one ========-->
       <div class="_1side_menu" >
         <div class="_1side_menu_logo">
@@ -21,6 +21,14 @@
               <li><router-link to="/"><Icon type="ios-speedometer" /> Dashboard</router-link></li>
               <li><router-link to="tags"><Icon type="ios-speedometer" /> Tags</router-link></li>
               <li><router-link to="category"><Icon type="ios-speedometer" /> Category</router-link></li>
+              <li><router-link to="adminusers"><Icon type="ios-speedometer" /> Users</router-link></li>
+              <li><router-link to="role"><Icon type="ios-speedometer" /> Role Manager</router-link></li>  
+               <li><router-link to="assignRole"><Icon type="ios-speedometer" /> Assign Role</router-link></li>  
+               <li><router-link to="createBlog"><Icon type="ios-speedometer" /> Create Blogs</router-link></li>  
+
+
+
+              <li><a href="/logout" title="Logout?"><Icon type="ios-speedometer" /> Logout?</a></li>
             </ul>
           </div>
         </div>
@@ -45,3 +53,18 @@
     	<router-view/>
 	</div>
 </template>
+
+<script>
+export default{
+  props: ['user', 'permission'],
+  data(){
+    return{
+      isLoggedIn: false,
+    } 
+  },
+  created(){
+    this.$store.commit('setUpdateUser',this.user)
+    this.$store.commit('setUserPermission',this.permission)
+  }
+}
+</script>

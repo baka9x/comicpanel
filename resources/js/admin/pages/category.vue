@@ -80,7 +80,7 @@
 				        	<Button type="primary" size="small" @click="addCategory" :disabled="isAdding" :loading="isAdding">{{isAdding ? 'Adding..' : 'Add category'}}</Button>
 				        </div>
 			    </Modal>
-			    <!--TAG EDITING MODAL -->
+			    <!--CATEGORY EDITING MODAL -->
 				<Modal
 			        v-model="editModal"
 			        title="Edit category"
@@ -110,30 +110,14 @@
 				               
 				                <Icon type="ios-trash-outline" @click="deleteImage(false)"></Icon>
 				            </div>
-					    </div>
-
-
-
+					    </div> 
 			        <div slot="footer">
 			        	<Button type="default" size="small" @click="closeEditModal">Close</Button>
 			        	<Button type="primary" size="small" @click="editCategory" :disabled="isAdding" :loading="isAdding">{{isAdding ? 'Editing..' : 'Edit category'}}</Button>
 			        </div>
 			    	</Modal>
-
-			    <!--TAG DELETING MODAL -->
-			    <Modal v-model="deleteModal" width="360">
-		        <p slot="header" style="color:#f60;text-align:center">
-		            <Icon type="ios-information-circle"></Icon>
-		            <span>Delete confirmation</span>
-		        </p>
-		        <div style="text-align:center">
-		            <p>Are you sure you want to delete this category?</p>
-		        </div>
-		        <div slot="footer">
-		            <Button type="error" size="large" long :loading="showDeleteModal" @click="deleteCategory">Delete</Button>
-		        </div>
-		    </Modal>
-
+			    <!--CATEGORY EDITING MODAL -->
+		    	<deleteModal/>
 
 			</div>
 		</div>
@@ -141,6 +125,8 @@
 </template>
 
 <script>
+import deleteModal from '../components/deleteModal'
+import { mapGetters } from 'vuex'
 export default{
 	data(){
 		return {
@@ -161,6 +147,7 @@ export default{
 			index: -1,
 			deleteItem: {},
 			deleteIndex: -1,
+			isDeleting: false,
 			token: '',
 			isIconImageNew: false,
 			isEditingItem: false,
@@ -192,7 +179,7 @@ export default{
 				}
 				
 			}
-		},
+	},
 	async editCategory(){
 			if (this.editData.categoryName.trim()=='') return this.w('Category name is required.')
 			if (this.editData.iconImage.trim()=='') return this.w('Icon image is required.')
@@ -219,7 +206,7 @@ export default{
 				}
 				
 			}
-		},
+	},
 	showEditModal(category, index){
 		let obj = {
 			id: category.id,
@@ -233,25 +220,19 @@ export default{
 			this.isEditingItem = true
 	},
 
-	async deleteCategory(){
-			this.showDeleteModal = true
-			const res = await this.callApi('post', '/app/delete_category', this.deleteItem)
-			if(res.status === 200){
-				this.categories.splice(this.deleteIndex, 1)
-				this.s('Category has been deleted successfully!')
-				this.deleteModal = false
-				this.showDeleteModal = false
-			}else{
-				this.e()
+	showDeletingModal(category, i){
+			const deleteModalObj = {
+				showDeleteModal: true,
+				deleteUrl: '/app/delete_category',
+				data: category,
+				deleteIndex: i,
+				isDeleted: false,
 			}
+			this.$store.commit('setDeleteModalObj', deleteModalObj)
 	},
-	showDeletingModal(category, index){
-			this.deleteItem = category
-			this.deleteModal = true
-			this.deleteIndex = index		
-	},
-
+	
 	handleSuccess (res, file) {
+		
 			if(this.isEditingItem){
 				return this.editData.iconImage = res
 			}
@@ -276,8 +257,6 @@ export default{
 	         	this.data.iconImage = ''
 	         	this.$refs.uploads.clearFiles()
          	}
-
-
          		const res = await this.callApi('post', '/app/delete_image', {imageName: img})
 
          	if(res.status != 200){
@@ -301,6 +280,22 @@ export default{
 			this.categories = res.data
 		}else{
 			this.e()
+		}
+	},
+
+	components: {
+		deleteModal,
+	},
+
+	computed : {
+        ...mapGetters(['getDeleteModalObj'])
+    },
+
+	watch : {
+		getDeleteModalObj(obj){
+			if(obj.isDeleted){
+				this.categories.splice(obj.deleteIndex, 1)
+			}
 		}
 	}
 }
