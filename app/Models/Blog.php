@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class Blog extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'post', 'post_excerpt', 'slug', 'user_id', 'featuredImage', 'metaDescription', 'views'];
+    protected $fillable = ['title', 'post', 'post_excerpt', 'slug', 'user_id', 'featuredImage', 'metaDescription', 'views', 'jsonData'];
 
     public function setSlugAttribute($title){
         $this->attributes['slug'] = $this->uniqueSlug($title);
@@ -22,9 +22,9 @@ class Blog extends Model
     }
 
     public function tag(){
-        return $this->belongsToMany('App\Tag', 'blogtags');
+        return $this->belongsToMany('App\Models\Tag', 'blogtags');
     }
     public function cat(){
-        return $this->belongsToMany('App\Category', 'blogcategories');
+        return $this->belongsToMany('App\Models\Category', 'blogcategories');
     }
 }

@@ -227,6 +227,8 @@ export default{
 				data: category,
 				deleteIndex: i,
 				isDeleted: false,
+				msg : 'Are you sure you want to delete this category?',
+                successMsg: 'Category has been deleted successfully!'
 			}
 			this.$store.commit('setDeleteModalObj', deleteModalObj)
 	},

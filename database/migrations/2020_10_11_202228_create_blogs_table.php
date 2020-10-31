@@ -17,12 +17,13 @@ class CreateBlogsTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('post');
+            $table->string('jsonData');
             $table->string('slug')->unique();
             $table->string('user_id');
             $table->string('featuredImage')->nullable();
             $table->string('metaDescription');
-            $table->integer('views')->default(0);
             $table->string('post_excerpt');
+            $table->integer('views')->default(0);
             $table->timestamps();
         });
     }

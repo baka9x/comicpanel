@@ -8,7 +8,10 @@ use App\Models\Tag;
 use App\Models\Category;
 use App\Models\Role;
 use App\Models\Blog;
+use App\Models\Blogcategory;
+use App\Models\Blogtag;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -321,8 +324,7 @@ class AdminController extends Controller
             'post' => 'some post',
             'user_id' => 1,
             'metaDescription' => 'aead',
-            'post_excerpt' => 'aead',
-            
+            'post_excerpt' => 'aead', 
         ]);
         return $title;
     }
@@ -432,7 +434,14 @@ class AdminController extends Controller
     }
     public function deleteBlog(Request $request)
     {
-        return Blog::where('id', $request->id)->delete();
+        try{
+           Blog::where('id', $request->id)->delete();
+           Blogcategory::where('blog_id', $request->id)->delete();
+           Blogtag::where('blog_id', $request->id)->delete();
+           return 'done';
+        }catch (\Throwable $e) {
+            return 'not done';
+        }
     }
     public function singleBlogItem(Request $request, $id){
         return Blog::with(['tag', 'cat'])->where('id', $id)->first();

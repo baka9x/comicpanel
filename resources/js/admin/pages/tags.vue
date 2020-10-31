@@ -146,6 +146,8 @@ export default{
 			data: tag,
 			deleteIndex: i,
 			isDeleted: false,
+			msg : 'Are you sure you want to delete this Tag?',
+                successMsg: 'Tag has been deleted successfully!'
 			}
 		this.$store.commit('setDeleteModalObj', deleteModalObj)
 		},

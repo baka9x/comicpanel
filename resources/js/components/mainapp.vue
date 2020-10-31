@@ -23,7 +23,7 @@
               <li><router-link to="category"><Icon type="ios-speedometer" /> Category</router-link></li>
               <li><router-link to="adminusers"><Icon type="ios-speedometer" /> Users</router-link></li>
               <li><router-link to="role"><Icon type="ios-speedometer" /> Role Manager</router-link></li>  
-               <li><router-link to="assignRole"><Icon type="ios-speedometer" /> Assign Role</router-link></li>  
+              <!-- <li><router-link to="assignRole"><Icon type="ios-speedometer" /> Assign Role</router-link></li>  -->
                <li><router-link to="createBlog"><Icon type="ios-speedometer" /> Create Blogs</router-link></li>  
 
 
@@ -56,7 +56,7 @@
 
 <script>
 export default{
-  props: ['user', 'permission'],
+  props: ['user','permission'],//
   data(){
     return{
       isLoggedIn: false,
@@ -64,7 +64,7 @@ export default{
   },
   created(){
     this.$store.commit('setUpdateUser',this.user)
-    this.$store.commit('setUserPermission',this.permission)
+   this.$store.commit('setUserPermission',this.permission)
   }
 }
 </script>

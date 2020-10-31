@@ -2,32 +2,55 @@
     <div>
        <div class="content">
 			<div class="container-fluid">
-				
+
 				<!--~~~~~~~ TABLE ONE ~~~~~~~~~-->
 				<div class="_1adminOverveiw_table_recent _box_shadow _border_radious _mar_b30 _p20">
-					<p class="_title0">Create Blogs <Button @click="addModal=true"><Icon type="md-add" /> Add a new role</Button></p>
-
+					<p class="_title0">Create blog</p>
+					<div class="_input_field">
+						 <Input type="text" v-model="data.title" placeholder="Title" />
+					 </div>
 					<div class="_overflow _table_div blog_editor">
-						  <editor
+
+                             <editor
                                 ref="editor"
                                 autofocus
                                 holder-id="codex-editor"
                                 save-button-id="save-button"
                                 :init-data="initData"
                                 @save="onSave"
-                                @remove="onDelete"
 								:config="config"
 							/>
-							
+
+
 					</div>
 					<div class="_input_field">
-						<Input type="text" placeholder="Title"/>
+						 <Input  type="textarea" v-model="data.post_excerpt" :rows="4" placeholder="Post excerpt " />
+					 </div>
+					<div class="_input_field">
+						<Select  filterable multiple placeholder="Select category" v-model="data.category_id">
+							<Option v-for="(c, i) in category" :value="c.id" :key="i">{{ c.categoryName }}</Option>
+						</Select>
 					</div>
 					<div class="_input_field">
-						<Button @click="save">Save the data</Button>
+						<Select  filterable multiple placeholder="Select tag" v-model="data.tag_id">
+							<Option v-for="(t, i) in tag" :value="t.id" :key="i">{{ t.tagName }}</Option>
+						</Select>
 					</div>
-					
+					<div class="_input_field">
+						 <Input  type="textarea" v-model="data.metaDescription" :rows="4" placeholder="Meta description" />
+					 </div>
+
+
+					 <div class="_input_field">
+						 <Button @click="save" :loading="isCreating" :disabled="isCreating">{{isCreating ? 'Please wait...' : 'Create blog'}}</Button>
+					 </div>
+
 				</div>
+
+
+
+
+
 			</div>
 		</div>
     </div>
@@ -39,56 +62,66 @@
 export default {
 	data(){
 		return {
-			config: {
-		        
-		      },
-		    initData: null,
-			data : {
-				
-			}, 
-			
+            config: {
+
+			},
+            initData: null,
+            data: {
+				title : '',
+				post : '',
+				post_excerpt : '',
+				metaDescription : '',
+				category_id : [],
+				tag_id : [],
+				jsonData: null
+
+			},
+			articleHTML: '',
+			category : [],
+			tag : [],
+			isCreating: false,
+
 
 		}
 	},
 
 	methods : {
-		async add(){
-			if(this.data.roleName.trim()=='') return this.e('Role name is required')
-			const res = await this.callApi('post', 'app/create_role', this.data)
-			if(res.status===201){
-				this.tags.unshift(res.data)
-				this.s('Role has been added successfully!')
-				this.addModal = false
-				this.data.roleName = ''
+
+
+
+        async onSave(response){
+            var data = response
+			await this.outputHtml(data.blocks)
+			this.data.post = this.articleHTML
+            this.data.jsonData = JSON.stringify(data)
+            if(this.data.post.trim()=='') return this.w('Post is required')
+            if(this.data.title.trim()=='') return this.w('Title is required')
+            if(this.data.post_excerpt.trim()=='') return this.w('Post exerpt is required')
+            if(this.data.metaDescription.trim()=='') return this.w('Meta description is required')
+            if(!this.data.tag_id.length) return this.w('Tag is required')
+            if(!this.data.category_id.length) return this.w('Category is required')
+
+			this.isCreating = true
+			const res = await this.callApi('post', 'app/create_blog', this.data)
+			if(res.status===200){
+				this.s('Blog has been created successfully!')
+                // redirect...
+                this.$router.push('/blogs')
 			}else{
-				if(res.status==422){
-					if(res.data.errors.roleName){
-						this.e(res.data.errors.roleName[0])
-					}
-					
-				}else{
-					this.swr()
-				}
-				
+                if(res.status==422){
+                    for(let i in res.data.errors){
+                        this.e(res.data.errors[i][0])
+                    }
+                }else{
+                    this.e()
+                }
+
 			}
-
-		},
-
-		async onSave(response){
-			var data= response
-			await this.outputHtml(data.blocks)
-			console.log(this.articleHTML)
-		},
-
-		async save(){
-			this.$refs.editor.save()
-		},
-
-		async onDelete(response){
-			var data= response
-			await this.outputHtml(data.blocks)
-			console.log(this.articleHTML)
-		},
+			this.isCreating = false
+        },
+        async save(){
+            this.$refs.editor.save()
+        },
 		 outputHtml(articleObj){
 		   articleObj.map(obj => {
 				switch (obj.type) {
@@ -138,17 +171,30 @@ export default {
 				}
 			});
 		},
-		
-		
-	}, 
+	},
+	async created(){
+		const [cat, tag] = await Promise.all([
+			this.callApi('get', 'app/get_categories'),
+			this.callApi('get', 'app/get_tags'),
+		])
+		if(cat.status==200){
+			this.category = cat.data
+			this.tag = tag.data
+		}else{
+			this.swr()
+		}
 
-	
-	
+	}
 
 
-	
+
+
+
+
+
 }
 </script>
+
 
 <style>
 	.blog_editor {
