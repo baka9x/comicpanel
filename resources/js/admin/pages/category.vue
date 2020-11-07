@@ -15,7 +15,8 @@
 							<tr>
 								<th>ID</th>
 								<th>Category name</th>
-								<th>Icon image</th>
+								<th>Category description</th>
+								<th>Cover image</th>
 								<th>Created at</th>
 								
 								<th>Action</th>
@@ -27,8 +28,9 @@
 							<tr v-for="(category, i) in categories" :key="i" v-if="categories.length">
 								<td>{{category.id}}</td>
 								<td class="_table_name">{{category.categoryName}}</td>
+								<td class="_table_des">{{category.categoryDescription}}</td>
 								<td class="_table_icon_thumb">
-									<img :src="`/uploads/${category.iconImage}`" />
+									<img :src="`/uploads/${category.categoryCover}`" />
 								</td>
 								<td>{{category.created_at}}</td>
 								<td>
@@ -49,8 +51,13 @@
 			        title="Add new category"
 					:closable="false"
 			       	>
+			       	<div class="mt-2">
 			       	<Input v-model="data.categoryName" placeholder="Enter category name..."/>
-			       	<div class="mt-2"></div>
+			       </div>
+			       	<div class="mt-2">
+			       			<Input v-model="data.categoryDescription" placeholder="Enter category description..."/>
+			       	</div>
+			       	<div class="mt-2">
 			       		<Upload
 			       			ref="uploads"
 					        type="drag"
@@ -66,14 +73,17 @@
 					            <p>Click or drag files here to upload</p>
 					        </div>
 					    </Upload>
-					    <div class="demo-upload-list" v-if="data.iconImage">
-					    	<img :src="`/uploads/${data.iconImage}`" />
+					    <div class="demo-upload-list" v-if="data.categoryCover">
+					    	<img :src="`/uploads/${data.categoryCover}`" />
 
 					    	 <div class="demo-upload-list-cover">
 				               
 				                <Icon type="ios-trash-outline" @click="deleteImage"></Icon>
 				            </div>
 					    </div>
+
+					</div>
+
 				        
 				        <div slot="footer">
 				        	<Button type="default" size="small" @click="addModal=false">Close</Button>
@@ -103,8 +113,8 @@
 					            <p>Click or drag files here to upload</p>
 					        </div>
 					    </Upload>
-					    <div class="demo-upload-list" v-if="editData.iconImage">
-					    	<img :src="`/uploads/${editData.iconImage}`" />
+					    <div class="demo-upload-list" v-if="editData.categoryCover">
+					    	<img :src="`/uploads/${editData.categoryCover}`" />
 
 					    	 <div class="demo-upload-list-cover">
 				               
@@ -131,8 +141,9 @@ export default{
 	data(){
 		return {
 			data: {
-				iconImage: '',
+				categoryCover: '',
 				categoryName: '',
+				categoryDescription: '',
 			},
 			addModal: false,
 			editModal: false,
@@ -142,7 +153,8 @@ export default{
 			categories: [],
 			editData: {
 				categoryName: '',
-				iconImage: '',
+				categoryCover: '',
+				categoryDescription: '',
 			},
 			index: -1,
 			deleteItem: {},
@@ -158,21 +170,26 @@ export default{
 	methods: {
 	async addCategory(){
 			if (this.data.categoryName.trim()=='') return this.w('Category name is required.')
-			if (this.data.iconImage.trim()=='') return this.w('Icon image is required.')
+				if (this.data.categoryDescription.trim()=='') return this.w('Category description is required.')
+			if (this.data.categoryCover.trim()=='') return this.w('Cover image is required.')
 				const res = await this.callApi('post', 'app/create_category', this.data)
 			if (res.status === 201){
 				this.categories.unshift(res.data)
 				this.s('Category has been added successfully!')
 				this.addModal = false
 				this.data.categoryName = ''
-				this.data.iconImage = ''
+				this.data.categoryDescription = ''
+				this.data.categoryCover = ''
 			}else{
 				if(res.status == 422){
 					if(res.data.errors.categoryName){
 						this.e(res.data.errors.categoryName[0]);
 					}
-					if(res.data.errors.iconImage){
-						this.e(res.data.errors.iconImage[0]);
+					if(res.data.errors.categoryCover){
+						this.e(res.data.errors.categoryCover[0]);
+					}
+					if(res.data.errors.categoryDescription){
+						this.e(res.data.errors.categoryDescription[0]);
 					}
 				}else{
 					this.e()
@@ -182,15 +199,15 @@ export default{
 	},
 	async editCategory(){
 			if (this.editData.categoryName.trim()=='') return this.w('Category name is required.')
-			if (this.editData.iconImage.trim()=='') return this.w('Icon image is required.')
+			if (this.editData.categoryCover.trim()=='') return this.w('Icon image is required.')
 				const res = await this.callApi('post', 'app/edit_category', this.editData)
 			if (res.status === 200){
 				this.categories[this.index].categoryName = this.editData.categoryName
-				this.categories[this.index].iconImage = this.editData.iconImage
+				this.categories[this.index].categoryCover = this.editData.categoryCover
 				this.s('Category has been edited successfully!')
 				this.editModal = false
 				this.editData.categoryName = ''
-				this.editData.iconImage = ''
+				this.editData.categoryCover = ''
 				this.isIconImageNew = false
 				this.isEditingItem = false
 			}else{
@@ -198,8 +215,8 @@ export default{
 					if(res.editData.errors.categoryName){
 						this.e(res.editData.errors.categoryName[0]);
 					}
-					if(res.editData.errors.iconImage){
-						this.e(res.editData.errors.iconImage[0]);
+					if(res.editData.errors.categoryCover){
+						this.e(res.editData.errors.categoryCover[0]);
 					}
 				}else{
 					this.e()
@@ -211,7 +228,7 @@ export default{
 		let obj = {
 			id: category.id,
 			categoryName: category.categoryName,
-			iconImage: category.iconImage,
+			categoryCover: category.categoryCover,
 
 		}
 			this.editData = obj
@@ -236,9 +253,9 @@ export default{
 	handleSuccess (res, file) {
 		
 			if(this.isEditingItem){
-				return this.editData.iconImage = res
+				return this.editData.categoryCover = res
 			}
-                this.data.iconImage = res		
+                this.data.categoryCover = res		
     },
     handleFormatError (file) {
         this.w('File format of ' + file.name + ' is incorrect, please select jpg or png.');
@@ -251,29 +268,29 @@ export default{
          	if(!isAdd){
          		//Editing
          		this.isIconImageNew = true
-	         	img = this.editData.iconImage
-	         	this.editData.iconImage = ''
+	         	img = this.editData.categoryCover
+	         	this.editData.categoryCover = ''
 	         	this.$refs.editDataUploads.clearFiles()
          	}else{
-         		img = this.data.iconImage
-	         	this.data.iconImage = ''
+         		img = this.data.categoryCover
+	         	this.data.categoryCover = ''
 	         	this.$refs.uploads.clearFiles()
          	}
          		const res = await this.callApi('post', '/app/delete_image', {imageName: img})
 
          	if(res.status != 200){
          		if(!isAdd){
-         			this.editData.iconImage = img
+         			this.editData.categoryCover = img
          		} else{
-         			this.data.iconImage = img
+         			this.data.categoryCover = img
          		}
          		this.e()
          	}
-         },
-         closeEditModal(){
-         	this.isEditingItem = false
-         	this.editModal = false
-         },
+    },
+    	closeEditModal(){
+        this.isEditingItem = false
+        this.editModal = false
+     	},
 	},
 	async created(){
 		this.token = window.Laravel.csrfToken;

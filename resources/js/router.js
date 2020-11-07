@@ -3,14 +3,15 @@ import Router from 'vue-router'
 Vue.use(Router)
 //admin project pages
 import home from './components/pages/home'
-import tags from './admin/pages/tags'
 import category from './admin/pages/category'
 import adminusers from './admin/pages/adminusers'
 import login from './admin/pages/login'
 import role from './admin/pages/role'
 import assignRole from './admin/pages/assignRole'
-import createBlog from './admin/pages/createBlog'
-import blogs from './admin/pages/blogs'
+import createComic from './admin/pages/createComic'
+import comics from './admin/pages/comics'
+import chapters from './admin/pages/chapters'
+import createChapter from './admin/pages/createChapter'
 
 import notfound from './admin/pages/notfound'
 
@@ -20,12 +21,6 @@ const routes = [
 		path: '/',
 		component: home,	
 		name: 'home',	
-	},
-
-	{
-		path: '/tags',
-		component: tags,
-		name: 'tags',	
 	},
 
 	{
@@ -58,20 +53,40 @@ const routes = [
 		name: 'assignRole',	
 	},
 	{
-		path: '/createBlog',
-		component: createBlog,	
-		name: 'createBlog',	
+		path: '/createComic',
+		component: createComic,	
+		name: 'createComic',	
 	},
 	{
-        path: '/blogs',
-        component: blogs,
-        name: 'blogs'
+        path: '/comics',
+        component: comics,
+        name: 'comics'
 
     },
     // {
     //     path: '/editblog/:id',
     //     component: editblog,
     //     name: 'editblog'
+
+    // },
+
+    {
+		path: '/chapters',
+		component: chapters,
+		name: 'chapters',	
+	},
+
+    {
+        path: '/createChapter',
+        component: createChapter,
+        name: 'createChapter'
+
+    },
+
+    // {
+    //     path: '/comics',
+    //     component: comics,
+    //     name: 'comics'
 
     // },
     

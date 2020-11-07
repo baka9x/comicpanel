@@ -4,7 +4,7 @@
       <!--========== ADMIN SIDE MENU one ========-->
       <div class="_1side_menu" >
         <div class="_1side_menu_logo">
-          <h3 style="text-align:center;">BAKA9X</h3>
+          <h3 style="text-align:center;">MICTOONS</h3>
           <!--<img src="/img/logo.jpg" style="width: 108px;margin-left: 68px;"/>-->
         </div>
 
@@ -19,15 +19,15 @@
           <div class="_1side_menu_list">
             <ul class="_1side_menu_list_ul">
               <li><router-link to="/"><Icon type="ios-speedometer" /> Dashboard</router-link></li>
-              <li><router-link to="tags"><Icon type="ios-speedometer" /> Tags</router-link></li>
+              
               <li><router-link to="category"><Icon type="ios-speedometer" /> Category</router-link></li>
               <li><router-link to="adminusers"><Icon type="ios-speedometer" /> Users</router-link></li>
               <li><router-link to="role"><Icon type="ios-speedometer" /> Role Manager</router-link></li>  
               <!-- <li><router-link to="assignRole"><Icon type="ios-speedometer" /> Assign Role</router-link></li>  -->
-               <li><router-link to="createBlog"><Icon type="ios-speedometer" /> Create Blogs</router-link></li>  
-
-
-
+               <li><router-link to="comics"><Icon type="ios-speedometer" /> Comics</router-link></li>  
+             
+              <li><router-link to="chapters"><Icon type="ios-speedometer" /> Chapters</router-link></li>
+              
               <li><a href="/logout" title="Logout?"><Icon type="ios-speedometer" /> Logout?</a></li>
             </ul>
           </div>

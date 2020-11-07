@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('fullName');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('avatar')->default('no_avatar.png');
             $table->foreignId('role_id')->default(2);
             $table->foreign('role_id')->references('id')->on('roles');
             $table->boolean('isActived')->default(0);

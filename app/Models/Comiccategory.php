@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tag extends Model
+class Comiccategory extends Model
 {
     use HasFactory;
-    protected $fillable = ['id', 'tagName'];
+    protected $fillable = ['id', 'category_id', 'comic_id'];
 }

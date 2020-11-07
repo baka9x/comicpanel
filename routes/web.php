@@ -17,14 +17,14 @@ use App\Http\Middleware\AdminCheck;
 
 Route::prefix('app')->middleware([AdminCheck::class])->group(function () {
 
-	//Add Tag
-	Route::post('/create_tag', [AdminController::class, 'addTag']);
-	//Edit Tag
-	Route::post('/edit_tag', [AdminController::class, 'editTag']);
-	//Delete Tag
-	Route::post('/delete_tag', [AdminController::class, 'deleteTag']);
-	//Get Tags
-	Route::get('/get_tags', [AdminController::class, 'getTags']);
+	//Add Chapter
+	Route::post('/create_chapter', [AdminController::class, 'addChapter']);
+	//Edit Chapter
+	Route::post('/edit_chapter', [AdminController::class, 'editChapter']);
+	//Delete Chapter
+	Route::post('/delete_chapter', [AdminController::class, 'deleteChapter']);
+	//Get Chapters
+	Route::get('/get_chapters', [AdminController::class, 'getChapters']);
 	//Add Category
 	Route::post('create_category', [AdminController::class, 'addCategory']);
 	//Edit Category
@@ -47,9 +47,10 @@ Route::prefix('app')->middleware([AdminCheck::class])->group(function () {
 	Route::post('/admin_login', [AdminController::class, 'adminLogin']);
 	//Upload
 	Route::post('/upload', [AdminController::class, 'upload']);
+	//Chapter zip upload
+	Route::post('/chapterUpload', [AdminController::class, 'chapterUpload']);
 	//Delete Image Upload
 	Route::post('/delete_image', [AdminController::class, 'deleteImage']);
-
 	//Add Role
 	Route::post('/create_role', [AdminController::class, 'addRole']);
 	//Edit Role
@@ -62,25 +63,27 @@ Route::prefix('app')->middleware([AdminCheck::class])->group(function () {
 	Route::post('/assign_roles', [AdminController::class, 'assignRoles']);
 
 
-	//Create Blog
-	Route::post('/create_blog', [AdminController::class, 'createBlog']);
+	//Create Comic
+	Route::post('/create_comic', [AdminController::class, 'createComic']);
 
 
-	Route::get('/blogsdata', [AdminController::class, 'blogdata']);
+	Route::get('/comicsdata', [AdminController::class, 'comicdata']);
+	Route::get('/latest_chapter', [AdminController::class, 'getLatestChapter']);
 
 
 
-	Route::post('/delete_blog', [AdminController::class, 'deleteBlog']);
+
+	Route::post('/delete_comic', [AdminController::class, 'deleteComic']);
 
 
-	Route::get('/blog_single/{id}', [AdminController::class, 'singleBlogItem']);
+	Route::get('/comic_single/{id}', [AdminController::class, 'singleComicItem']);
 
 
-	Route::post('/update_blog/{id}', [AdminController::class, 'updateBlog']);
+	Route::post('/update_comic/{id}', [AdminController::class, 'updateComic']);
 
 });
 
-Route::post('createBlog', [AdminController::class, 'uploadEditorImage']);
+Route::post('createComic', [AdminController::class, 'uploadEditorImage']);
 
 Route::get('slug',  [AdminController::class, 'slug']);
 

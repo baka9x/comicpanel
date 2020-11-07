@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Tag;
+use App\Models\Chapter;
 use App\Models\Category;
 use App\Models\Role;
-use App\Models\Blog;
-use App\Models\Blogcategory;
-use App\Models\Blogtag;
+use App\Models\Comic;
+use App\Models\Comiccategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use VIPSoft\Unzip\Unzip;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -79,6 +80,7 @@ class AdminController extends Controller
             'email' => 'bail|required|email|unique:users',
             'password' => 'bail|required|min:6',
             'role_id' => 'required',
+            
         ]);
         $password = bcrypt($request->password);
         $user = User::create([
@@ -160,61 +162,84 @@ class AdminController extends Controller
         }
     }
 
-	//----TAG FUNCIONS----//
+	//----CHAPTER FUNCIONS----//
+    //['id', 'chapterTitle', 'chapterThumbnail', 'chapterContent', 'comic_id', 'chapterViews'];
 
-    public function addTag(Request $request){
+    public function addChapter(Request $request){
     	//Validate request
     	$this->validate($request,[
-    		'tagName' => 'required'
+    		'chapterTitle' => 'required',
+            'chapterThumbnail' => 'required',
+            'chapterContent' => 'required',
+            'comic_id' => 'required',
     	]);
-    	return Tag::create([
-    		'tagName' => $request->tagName,
+    	return Chapter::create([
+    		'chapterTitle' => $request->chapterTitle,
+            'chapterThumbnail' => $request->chapterThumbnail,
+            'chapterContent' => $request->chapterContent,
+            'comic_id' => $request->comic_id,
+
     	]);
     }
-    public function editTag(Request $request){
+    public function editChapter(Request $request){
     	//Validate request
     	$this->validate($request,[
-    		'tagName' => 'required',
+    		'chapterTitle' => 'required',
+            'chapterThumbnail' => 'required',
+            'chapterContent' => 'required',
     		'id'	 => 'required',
     	]);
-    	return Tag::where('id', $request->id)->update([
-    		'tagName' => $request->tagName,
+    	return Chapter::where('id', $request->id)->update([
+    		'chapterTitle' => 'required',
+            'chapterThumbnail' => 'required',
+            'chapterContent' => 'required',
     	]);
     }
-    public function deleteTag(Request $request){
+    public function deleteChapter(Request $request){
     	//Validate request
     	$this->validate($request,[
     		'id'	 => 'required',
     	]);
-    	return Tag::where('id', $request->id)->delete();
+    	return Chapter::where('id', $request->id)->delete();
     }
-    public function getTags(Request $request){
-    	return Tag::orderBy('id', 'DESC')->get();
+    public function getChapters(Request $request){
+    	return Chapter::orderBy('id', 'DESC')->get();
     }
+
+
+
+
+
 
 
     //--CATEGORY FUNCTIONS----//
+
+    //['id', 'categoryName', 'categoryDescription', 'categoryCover']
     public function addCategory(Request $request){
     	//Validate request
     	$this->validate($request,[
     		'categoryName' => 'required',
-    		'iconImage' => 'required'
+            'categoryDescription' => 'required',
+    		'categoryCover' => 'required'
     	]);
     	return Category::create([
     		'categoryName' => $request->categoryName,
-    		'iconImage' => $request->iconImage,
+            'categoryDescription' => $request->categoryDescription,
+    		'categoryCover' => $request->categoryCover,
     	]);
     }
     public function editCategory(Request $request){
     	//Validate request
     	$this->validate($request,[
-    		'categoryName' => 'required',
-    		'iconImage' => 'required',
+    		'categoryName' => $request->categoryName,
+            'categoryDescription' => $request->categoryDescription,
+            'categoryCover' => $request->categoryCover,
     		'id'	 => 'required',
     	]);
     	return Category::where('id', $request->id)->update([
     		'categoryName' => $request->categoryName,
-    		'iconImage' => $request->iconImage,
+            'categoryDescription' => $request->categoryDescription,
+            'categoryCover' => $request->categoryCover,
     	]);
     }
     public function deleteCategory(Request $request){
@@ -268,6 +293,30 @@ class AdminController extends Controller
         return $picName;
     }
 
+    public function chapterUpload(Request $request){
+        $this->validate($request, [
+            'file'   => 'required|mimes:zip',
+            'mangaName' => 'required',
+            'chapterName' => 'required',
+
+        ]);
+        $unzipper  = new Unzip();
+
+        $fileName = $request->chapterName.'.'.$request->file->extension();
+       
+        $dir = public_path('series/'.$request->mangaName.'/'.$request->chapterName);
+
+         if(!Storage::exists($dir)){
+            @mkdir($dir, 0755, true);
+        }
+         $request->file->move($dir, $fileName);
+        $path = public_path('series/'.$request->mangaName.'/'.$request->chapterName.'/'.$fileName);
+        $fileNames = $unzipper->extract($path, $dir);
+        return dd($fileNames);
+    }
+
+    //Change avatar user
+
 
 
 
@@ -317,57 +366,58 @@ class AdminController extends Controller
 
 
     //----BLOG FUNCIONS----//
-    public function slug(){
-        $title = 'This is a nice title changed';
-        return Blog::create([
-            'title' => $title,
-            'post' => 'some post',
-            'user_id' => 1,
-            'metaDescription' => 'aead',
-            'post_excerpt' => 'aead', 
-        ]);
-        return $title;
-    }
+    // public function slug(){
+    //     $title = 'This is a nice title changed';
+    //     return Comic::create([
+    //         'title' => $title,
+    //         'post' => 'some post',
+    //         'user_id' => 1,
+    //         'metaDescription' => 'aead',
+    //         'post_excerpt' => 'aead', 
+    //     ]);
+    //     return $title;
+    // }
 
    
-
-    public function createBlog(Request $request)
+    //['title', 'content', 'jsonData', 'user_id', 'thumbnail', 'cover', 'artist', 'views']
+    public function createComic(Request $request)
     {
         $this->validate($request, [
             'title' => 'required',
-            'post' => 'required',
-            'post_excerpt' => 'required',
-            'metaDescription' => 'required',
+            'content' => 'required',
+            'thumbnail' => 'required',
+            'cover' => 'required',
+            'artist' => 'required',
             'jsonData' => 'required',
             'category_id' => 'required',
-            'tag_id' => 'required',
+            
         ]);
         $categories = $request->category_id;
-        $tags = $request->tag_id;
+        //$tags = $request->tag_id;
 
-        $blogCategories = [];
-        $blogTags = [];
+        $comicCategories = [];
+        //$blogChapters = [];
         DB::beginTransaction();
         try {
-            $blog = Blog::create([
+            $comic = Comic::create([
                 'title' => $request->title,
-                'slug' => $request->title,
-                'post' => $request->post,
-                'post_excerpt' => $request->post_excerpt,
+                'content' => $request->content,
+                'thumbnail' => $request->thumbnail,
                 'user_id' => Auth::user()->id,
-                'metaDescription' => $request->metaDescription,
+                'cover' => $request->cover,
+                'artist' => $request->artist,
                 'jsonData' => $request->jsonData,
             ]);
-            // insert blog categories
+            // insert comic categories
             foreach ($categories as $c) {
-                array_push($blogCategories, ['category_id' => $c, 'blog_id' => $blog->id]);
+                array_push($comicCategories, ['category_id' => $c, 'comic_id' => $comic->id]);
             }
-            Blogcategory::insert($blogCategories);
-            // insert blog tags
-            foreach ($tags as $t) {
-                array_push($blogTags, ['tag_id' => $t, 'blog_id' => $blog->id]);
-            }
-            Blogtag::insert($blogTags);
+            Comiccategory::insert($comicCategories);
+            // // insert blog tags
+            // foreach ($tags as $t) {
+            //     array_push($blogChapters, ['tag_id' => $t, 'blog_id' => $blog->id]);
+            // }
+            //Comictag::insert($blogChapters);
             DB::commit();
             return 'done';
         } catch (\Throwable $th) {
@@ -377,48 +427,48 @@ class AdminController extends Controller
     }
 
     // update blog
-    public function updateBlog(Request $request, $id)
+    public function updateComic(Request $request, $id)
     {
         $this->validate($request, [
             'title' => 'required',
-            'post' => 'required',
-            'post_excerpt' => 'required',
-            'metaDescription' => 'required',
+            'content' => 'required',
+            'thumbnail' => 'required',
+            'cover' => 'required',
+            'artist' => 'required',
             'jsonData' => 'required',
             'category_id' => 'required',
-            'tag_id' => 'required',
         ]);
         $categories = $request->category_id;
-        $tags = $request->tag_id;
-        $blogCategories = [];
-        $blogTags = [];
+        //$tags = $request->tag_id;
+        $comicCategories = [];
+        //$blogChapters = [];
 
         DB::beginTransaction();
         try {
-            $blog = Blog::where('id', $id)->update([
+            $comic = Comic::where('id', $id)->update([
                 'title' => $request->title,
-                'slug' => $request->title,
-                'post' => $request->post,
-                'post_excerpt' => $request->post_excerpt,
+                'content' => $request->content,
+                'thumbnail' => $request->thumbnail,
+                'cover' => $request->cover,
+                'artist' => $request->artist,
                 'user_id' => Auth::user()->id,
-                'metaDescription' => $request->metaDescription,
                 'jsonData' => $request->jsonData,
             ]);
 
 
             // insert blog categories
             foreach ($categories as $c) {
-                array_push($blogCategories, ['category_id' => $c, 'blog_id' => $id]);
+                array_push($comicCategories, ['category_id' => $c, 'comic_id' => $id]);
             }
             // delete all previous categories
-            Blogcategory::where('blog_id', $id)->delete();
-            Blogcategory::insert($blogCategories);
-            // insert blog tags
-            foreach ($tags as $t) {
-                array_push($blogTags, ['tag_id' => $t, 'blog_id' => $id]);
-            }
-            Blogtag::where('blog_id', $id)->delete();
-            Blogtag::insert($blogTags);
+            Comiccategory::where('comic_id', $id)->delete();
+            Comiccategory::insert($comicCategories);
+            // // insert blog tags
+            // foreach ($tags as $t) {
+            //     array_push($blogChapters, ['tag_id' => $t, 'blog_id' => $id]);
+            // }
+            // Comictag::where('blog_id', $id)->delete();
+            // Comictag::insert($blogChapters);
             DB::commit();
             return 'done';
         } catch (\Throwable $e) {
@@ -428,22 +478,27 @@ class AdminController extends Controller
         }
     }
 
-    public function blogdata()
+    public function comicdata()
     {
-        return Blog::with(['tag', 'cat'])->orderBy('id', 'desc')->get();
+        return Comic::with(['cat'])->orderBy('id', 'desc')->get();
     }
-    public function deleteBlog(Request $request)
+
+     public function getLatestChapter(Request $request){
+        return Chapter::orderBy('id', 'DESC')->limit(3)->get();
+    }
+
+    public function deleteComic(Request $request)
     {
         try{
-           Blog::where('id', $request->id)->delete();
-           Blogcategory::where('blog_id', $request->id)->delete();
-           Blogtag::where('blog_id', $request->id)->delete();
+           Comic::where('id', $request->id)->delete();
+           Comiccategory::where('comic_id', $request->id)->delete();
+           Chapter::where('comic_id', $request->id)->delete();
            return 'done';
         }catch (\Throwable $e) {
             return 'not done';
         }
     }
-    public function singleBlogItem(Request $request, $id){
-        return Blog::with(['tag', 'cat'])->where('id', $id)->first();
+    public function singleComicItem(Request $request, $id){
+        return Comic::with(['chapter', 'cat'])->where('id', $id)->first();
     }
 }
